@@ -45,7 +45,7 @@ button.small{padding:6px 10px;font-size:13px}
 .add input.price{flex:0 0 110px}
 .vd{font-size:12px;color:var(--sub);margin-top:2px;cursor:pointer}
 .x{background:none;color:var(--sub);padding:4px 8px;font-size:18px}
-.add{display:flex;gap:6px;margin-top:14px;flex-wrap:wrap}
+.add{display:flex;gap:6px;margin:8px 0 4px;flex-wrap:wrap}
 .add input{flex:1 1 140px}
 .add select{flex:0 0 110px}
 nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:6}
@@ -160,7 +160,7 @@ function pct(list){var n=list.length;if(!n)return 0;return Math.round(list.filte
 function prog(label,list){var p=pct(list),c=list.filter(function(i){return i.d||i.done;}).length;
   return '<div class="prog"><div class="lbl"><span>'+label+'</span><span>'+c+'/'+list.length+' · '+p+'%</span></div><div class="bar"><i style="width:'+p+'%"></i></div></div>';}
 
-var PRICED={move:1,buy:1};
+var PRICED={move:1,buy:1},VENDOR={buy:1},MEMO={move:1};
 function sumP(list,onlyDone){return list.reduce(function(a,i){return a+((onlyDone&&!i.d)?0:(Number(i.p)||0));},0);}
 function interiorTotals(){
   var total=0,paid=0;
@@ -202,32 +202,50 @@ function renderHome(){
 }
 
 function renderList(k){
-  var L=LISTS[k],items=S[k],pr=!!PRICED[k],h='<div class="card">';
+  var L=LISTS[k],items=S[k],pr=!!PRICED[k],vd=!!VENDOR[k],mm=!!MEMO[k],h='<div class="card">';
   if(pr){var tt=sumP(items),pd=sumP(items,true);h+='<div class="sum" style="margin-bottom:6px"><div>합계<b>'+won(tt)+'</b></div><div>지출 완료<b>'+won(pd)+'</b></div></div>';}
   h+=prog(L.title,items);
   L.groups.forEach(function(g){
     var gi=items.filter(function(i){return i.g===g;});
-    if(!gi.length)return;
     h+='<div class="grp">'+esc(g)+'<span>'+gi.filter(function(i){return i.d;}).length+'/'+gi.length+(pr?' · '+won(sumP(gi)):'')+'</span></div>';
     gi.forEach(function(i){
-      h+='<div class="item'+(i.d?' done':'')+'" data-id="'+i.id+'"><input type="checkbox" '+(i.d?'checked':'')+'><div class="t">'+esc(i.t)+(pr?'<div class="vd" data-vd="1">'+(i.v?'🏬 '+esc(i.v):'+ 구입처')+'</div>':'')+'</div>'+(pr?'<button class="pr'+(i.p?' has':'')+'" data-pr="1">'+(i.p?won(i.p):'가격')+'</button>':'')+'<button class="x" data-del="1" aria-label="삭제">×</button></div>';
+      h+='<div class="item'+(i.d?' done':'')+'" data-id="'+i.id+'"><input type="checkbox" '+(i.d?'checked':'')+'><div class="t">'+esc(i.t)+
+        (vd?'<div class="vd" data-vd="1">'+(i.v?'🏬 '+esc(i.v):'+ 구입처')+'</div>':'')+
+        (mm?'<div class="vd" data-mm="1">'+(i.m?'📝 '+esc(i.m):'+ 메모')+'</div>':'')+'</div>'+
+        (pr?'<button class="pr'+(i.p?' has':'')+'" data-pr="1">'+(i.p?won(i.p):'가격')+'</button>':'')+
+        '<button class="x" data-del="1" aria-label="삭제">×</button></div>';
     });
+    h+='<div class="add" data-g="'+esc(g)+'"><input type="text" class="nt" placeholder="'+esc(g)+' 항목 추가">'+
+      (pr?'<input type="number" class="price np" inputmode="numeric" placeholder="가격(원)">':'')+
+      (vd?'<input type="text" class="nv" placeholder="구입처">':'')+
+      (mm?'<input type="text" class="nm" placeholder="메모">':'')+
+      '<button class="ab">추가</button></div>';
   });
-  if(!items.length)h+='<div class="empty">항목이 없습니다</div>';
-  h+='<div class="add"><input type="text" id="newt" placeholder="새 항목 입력">'+(pr?'<input type="number" class="price" id="newp" inputmode="numeric" placeholder="가격(원)">':'')+(pr?'<input type="text" id="newv" placeholder="구입처">':'')+'<select id="newg">'+L.groups.map(function(g){return '<option>'+esc(g)+'</option>';}).join('')+'</select><button id="addb">추가</button></div>';
-  h+='<div class="note">항목 글자를 누르면 수정, 가격 칸과 구입처를 눌러 입력할 수 있어요.'+(k==='docs'?' 필요 서류는 거래 상황(대출, 상속, 증여 등)에 따라 다릅니다. 최종 목록은 법무사에게 확인하세요.':'')+'</div></div>';
+  h+='<div class="note">눌러서 수정할 수 있어요: 항목 글자'+(pr?', 가격':'')+(vd?', 구입처':'')+(mm?', 메모':'')+'.'+(k==='docs'?' 필요 서류는 거래 상황(대출, 상속, 증여 등)에 따라 다릅니다. 최종 목록은 법무사에게 확인하세요.':'')+'</div></div>';
   app.innerHTML=h;
-  function add(){var v=document.getElementById('newt').value.trim();if(!v)return;S[k].push({id:uid(),g:document.getElementById('newg').value,t:v,d:false,p:pr?(Number(document.getElementById('newp').value)||0):0,v:pr?document.getElementById('newv').value.trim():''});save();renderList(k);}
-  document.getElementById('addb').onclick=add;
-  document.getElementById('newt').addEventListener('keydown',function(e){if(e.key==='Enter')add();});
-  app.querySelector('.card').addEventListener('click',function(e){
+  var card=app.querySelector('.card');
+  card.addEventListener('click',function(e){
+    var ab=e.target.closest('.ab');
+    if(ab){
+      var bx=ab.closest('.add');
+      var q=function(c){var el=bx.querySelector(c);return el?el.value.trim():'';};
+      var t=q('.nt');if(!t)return;
+      S[k].push({id:uid(),g:bx.dataset.g,t:t,d:false,p:Number(q('.np'))||0,v:q('.nv'),m:q('.nm')});
+      save();renderList(k);return;
+    }
     var row=e.target.closest('.item');if(!row)return;
     var it=S[k].filter(function(i){return i.id===row.dataset.id;})[0];if(!it)return;
     if(e.target.dataset.del){if(confirm('"'+it.t+'" 삭제할까요?')){S[k]=S[k].filter(function(i){return i!==it;});save();renderList(k);}return;}
     if(e.target.dataset.vd){var vv=prompt('구입처',it.v||'');if(vv!==null){it.v=vv.trim();save();renderList(k);}return;}
+    if(e.target.dataset.mm){var mv=prompt('메모',it.m||'');if(mv!==null){it.m=mv.trim();save();renderList(k);}return;}
     if(e.target.dataset.pr){var pv=prompt('가격 (원, 숫자만)',it.p||'');if(pv!==null){it.p=Number(String(pv).replace(/[^0-9]/g,''))||0;save();renderList(k);}return;}
     if(e.target.type==='checkbox'){it.d=e.target.checked;save();renderList(k);return;}
     if(e.target.closest('.t')){var v=prompt('항목 수정',it.t);if(v!==null&&v.trim()){it.t=v.trim();save();renderList(k);}}
+  });
+  card.addEventListener('keydown',function(e){
+    if(e.key!=='Enter')return;
+    var bx=e.target.closest&&e.target.closest('.add');
+    if(bx){e.preventDefault();bx.querySelector('.ab').click();}
   });
 }
 
