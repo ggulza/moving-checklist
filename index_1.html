@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2f6f5e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="이사준비">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>이사준비 체크리스트</title>
+<style>
+:root{--g:#2f6f5e;--g2:#e6f2ee;--bg:#f6f7f6;--card:#fff;--tx:#1d2420;--sub:#6b7771;--line:#e3e8e5;--warn:#c4472f}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:-apple-system,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;font-size:16px;line-height:1.45;padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+header{background:var(--g);color:#fff;padding:calc(14px + env(safe-area-inset-top)) 16px 14px;position:sticky;top:0;z-index:5}
+header h1{margin:0;font-size:18px}
+main{padding:14px;max-width:640px;margin:0 auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.card h2{margin:0 0 10px;font-size:15px;color:var(--sub);font-weight:600}
+.dday{text-align:center;padding:18px 10px}
+.dday .big{font-size:52px;font-weight:800;color:var(--g);letter-spacing:-1px;line-height:1.1}
+.dday .date{color:var(--sub);margin-top:4px}
+input,select,textarea,button{font:inherit}
+input[type=text],input[type=date],input[type=number],input[type=tel],select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--tx)}
+button{border:0;border-radius:10px;padding:10px 14px;background:var(--g);color:#fff;font-weight:600;cursor:pointer}
+button.ghost{background:var(--g2);color:var(--g)}
+button.danger{background:#fbeae6;color:var(--warn)}
+button.small{padding:6px 10px;font-size:13px}
+.row{display:flex;gap:8px;align-items:center}
+.bar{height:10px;background:var(--g2);border-radius:99px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--g);width:0;transition:width .3s}
+.prog{margin:10px 0}
+.prog .lbl{display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px}
+.grp{font-weight:700;font-size:14px;color:var(--g);margin:14px 0 4px;display:flex;justify-content:space-between}
+.grp span{color:var(--sub);font-weight:500}
+.item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.item:last-child{border-bottom:0}
+.item input[type=checkbox]{width:22px;height:22px;accent-color:var(--g);flex:none}
+.item .t{flex:1;word-break:break-all}
+.item.done .t{color:var(--sub);text-decoration:line-through}
+.pr{background:none;color:var(--sub);font-size:13px;padding:4px 8px;border:1px dashed var(--line);border-radius:8px;white-space:nowrap;font-weight:500}
+.pr.has{color:var(--tx);border-style:solid;font-weight:700}
+.add input.price{flex:0 0 110px}
+.x{background:none;color:var(--sub);padding:4px 8px;font-size:18px}
+.add{display:flex;gap:6px;margin-top:14px;flex-wrap:wrap}
+.add input{flex:1 1 140px}
+.add select{flex:0 0 110px}
+nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:6}
+nav button{flex:1;background:none;color:var(--sub);border-radius:0;padding:10px 2px;font-size:12px;font-weight:600}
+nav button b{display:block;font-size:20px;line-height:1.2}
+nav button.on{color:var(--g)}
+.iv{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px}
+.iv.done{background:#f3f7f5}
+.iv h3{margin:0;font-size:16px;display:flex;justify-content:space-between;gap:8px}
+.iv .meta{color:var(--sub);font-size:14px;margin:2px 0 8px}
+.money{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;text-align:center;font-size:13px}
+.money div{background:var(--bg);border-radius:8px;padding:6px 2px}
+.money b{display:block;font-size:14px}
+.chips{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:#fff;color:var(--sub);border-radius:99px;padding:5px 12px;font-size:13px}
+.chip.on{background:var(--g);color:#fff;border-color:var(--g)}
+.sum{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sum div{background:var(--g2);border-radius:10px;padding:10px;text-align:center;font-size:13px;color:var(--sub)}
+.sum b{display:block;color:var(--tx);font-size:17px}
+dialog{border:0;border-radius:16px;padding:16px;width:min(92vw,520px);max-height:88vh;overflow:auto}
+dialog::backdrop{background:rgba(0,0,0,.4)}
+label{display:block;font-size:13px;color:var(--sub);margin:10px 0 4px}
+.note{font-size:13px;color:var(--sub);background:#fff8e6;border-radius:10px;padding:10px;margin-top:12px}
+.empty{color:var(--sub);text-align:center;padding:16px 0}
+</style>
+</head>
+<body>
+<header><h1 id="ttl">🏠 이사준비</h1></header>
+<main id="app"></main>
+<nav id="nav"></nav>
+
+<dialog id="dlg">
+  <form method="dialog" id="ivForm">
+    <h3 id="dlgTitle" style="margin:0 0 4px">인테리어 항목</h3>
+    <label>공종 (예: 도배, 화장실)</label><input type="text" id="f_name">
+    <label>업체명</label><input type="text" id="f_vendor">
+    <label>업체 연락처</label><input type="tel" id="f_tel">
+    <label>시공일</label><input type="date" id="f_date">
+    <label>예약금 (원)</label><input type="number" id="f_dep" inputmode="numeric">
+    <label>잔금 (원)</label><input type="number" id="f_bal" inputmode="numeric">
+    <label>총액 (원) — 비워두면 예약금+잔금</label><input type="number" id="f_tot" inputmode="numeric">
+    <label>메모</label><textarea id="f_memo" rows="3"></textarea>
+    <div class="row" style="margin-top:16px;justify-content:space-between">
+      <button type="button" class="danger" id="f_del">삭제</button>
+      <div class="row">
+        <button type="button" class="ghost" id="f_cancel">취소</button>
+        <button type="button" id="f_save">저장</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+<script>
+(function(){
+'use strict';
+var KEY='moveapp.v1';
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function won(n){return (Number(n)||0).toLocaleString('ko-KR')+'원';}
+
+var LISTS={
+  move:{title:'이사 준비',groups:['D-30','D-14','D-7','이사 당일','입주 후','행정·주소변경'],seed:[
+    ['D-30','이사업체 견적 3곳 비교'],['D-30','이사업체 계약·날짜 확정'],['D-30','버릴 물건 정리 (대형폐기물 신고)'],['D-30','새 집 실측·가구 배치 계획'],['D-30','현재 집 퇴거·인도 일정 확인'],
+    ['D-14','인터넷·TV 이전 신청'],['D-14','양쪽 엘리베이터·사다리차 사용 예약'],['D-14','관리사무소에 이사 신고'],['D-14','가전·가구 배송일 확정'],
+    ['D-7','포장 시작 (안 쓰는 물건부터)'],['D-7','귀중품·중요 서류 따로 챙기기'],['D-7','냉장고 비우기'],['D-7','우편물 주소 이전 신청'],
+    ['이사 당일','현재 집 전기·가스·수도 검침'],['이사 당일','관리비·장기수선충당금 정산'],['이사 당일','열쇠·카드키·출입카드 인계'],['이사 당일','이삿짐 파손·누락 확인'],['이사 당일','새 집 현관 비밀번호 변경'],
+    ['입주 후','하자 점검 (사진 촬영)'],['입주 후','가스 안전점검 신청'],['입주 후','분리배출 규칙 확인'],['입주 후','소화기·화재경보기 확인'],
+    ['행정·주소변경','전입신고 (정부24)'],['행정·주소변경','자동차 등록증 주소 변경'],['행정·주소변경','은행·카드·보험 주소 변경'],['행정·주소변경','택배·쇼핑몰 배송지 변경'],['행정·주소변경','전기·가스·수도 명의 변경']
+  ]},
+  docs:{title:'잔금 서류',groups:['내가 준비 (매수인)','상대방에게 받을 것 (매도인)','잔금일 당일','잔금 후'],seed:[
+    ['내가 준비 (매수인)','신분증'],['내가 준비 (매수인)','매매계약서 원본'],['내가 준비 (매수인)','인감증명서 (부동산 매수용)'],['내가 준비 (매수인)','인감도장'],['내가 준비 (매수인)','주민등록초본'],['내가 준비 (매수인)','잔금 이체 한도 확인'],['내가 준비 (매수인)','대출 관련 서류 (해당 시)'],['내가 준비 (매수인)','법무사 선정·위임장'],['내가 준비 (매수인)','국민주택채권·등기 수수료 준비'],['내가 준비 (매수인)','자금조달계획서 (해당 시)'],
+    ['상대방에게 받을 것 (매도인)','등기권리증 (등기필정보)'],['상대방에게 받을 것 (매도인)','인감증명서 (매도용)'],['상대방에게 받을 것 (매도인)','인감도장 / 위임장'],['상대방에게 받을 것 (매도인)','주민등록초본'],['상대방에게 받을 것 (매도인)','관리비·장기수선충당금 정산 확인'],
+    ['잔금일 당일','등기부등본 최종 확인 (잔금 직전)'],['잔금일 당일','근저당 등 말소 조건 확인'],['잔금일 당일','잔금 송금 및 영수증 받기'],['잔금일 당일','열쇠·출입카드 인수'],
+    ['잔금 후','취득세 신고·납부 (위택스, 60일 이내)'],['잔금 후','소유권이전등기 신청 확인'],['잔금 후','등기 완료 후 등기부등본 발급 확인'],['잔금 후','전입신고 / 확정일자']
+  ]},
+  buy:{title:'구매 목록',groups:['가전','가구','생활용품'],seed:[
+    ['가전','냉장고'],['가전','세탁기·건조기'],['가전','에어컨'],['가전','TV'],
+    ['가구','침대·매트리스'],['가구','소파'],['가구','식탁·의자'],['가구','붙박이장·수납장'],
+    ['생활용품','커튼·블라인드'],['생활용품','조명 (전구 포함)'],['생활용품','욕실용품'],['생활용품','청소용품']
+  ]}
+};
+var INTERIOR_SEED=['철거','설비·배관','전기·조명','화장실','탄성코트','도배','바닥','주방·싱크대','붙박이장·가구','입주청소'];
+
+function seedList(k){return LISTS[k].seed.map(function(a){return {id:uid(),g:a[0],t:a[1],d:false};});}
+function defaults(){
+  return {moveDate:'',move:seedList('move'),docs:seedList('docs'),buy:seedList('buy'),
+    interior:INTERIOR_SEED.map(function(n){return {id:uid(),name:n,vendor:'',tel:'',date:'',dep:0,bal:0,tot:0,memo:'',depPaid:false,balPaid:false,done:false};})};
+}
+var S;
+try{S=JSON.parse(localStorage.getItem(KEY));}catch(e){S=null;}
+if(!S||typeof S!=='object'){S=defaults();save();}
+['move','docs','buy','interior'].forEach(function(k){if(!Array.isArray(S[k]))S[k]=[];});
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+
+var tab='home';
+var TABS=[['home','🏠','홈'],['move','📦','이사'],['interior','🎨','인테리어'],['docs','📄','서류'],['buy','🛒','구매']];
+var app=document.getElementById('app'),nav=document.getElementById('nav'),ttl=document.getElementById('ttl');
+
+function renderNav(){
+  nav.innerHTML=TABS.map(function(t){return '<button data-t="'+t[0]+'" class="'+(tab===t[0]?'on':'')+'"><b>'+t[1]+'</b>'+t[2]+'</button>';}).join('');
+}
+nav.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;tab=b.dataset.t;window.scrollTo(0,0);render();});
+
+function ddayInfo(){
+  if(!S.moveDate)return {big:'D-?',sub:'아래에서 이삿날을 입력하세요'};
+  var p=S.moveDate.split('-'),t=new Date(+p[0],+p[1]-1,+p[2]),n=new Date();n=new Date(n.getFullYear(),n.getMonth(),n.getDate());
+  var diff=Math.round((t-n)/86400000),w=['일','월','화','수','목','금','토'][t.getDay()];
+  var big=diff===0?'D-DAY':(diff>0?'D-'+diff:'D+'+(-diff));
+  return {big:big,sub:p[0]+'년 '+(+p[1])+'월 '+(+p[2])+'일 ('+w+')'};
+}
+function pct(list){var n=list.length;if(!n)return 0;return Math.round(list.filter(function(i){return i.d||i.done;}).length/n*100);}
+function prog(label,list){var p=pct(list),c=list.filter(function(i){return i.d||i.done;}).length;
+  return '<div class="prog"><div class="lbl"><span>'+label+'</span><span>'+c+'/'+list.length+' · '+p+'%</span></div><div class="bar"><i style="width:'+p+'%"></i></div></div>';}
+
+var PRICED={move:1,buy:1};
+function sumP(list,onlyDone){return list.reduce(function(a,i){return a+((onlyDone&&!i.d)?0:(Number(i.p)||0));},0);}
+function interiorTotals(){
+  var total=0,paid=0;
+  S.interior.forEach(function(i){
+    var tot=Number(i.tot)||((Number(i.dep)||0)+(Number(i.bal)||0));
+    total+=tot;
+    if(i.depPaid)paid+=Number(i.dep)||0;
+    if(i.balPaid)paid+=Number(i.bal)||0;
+  });
+  return {total:total,paid:paid,left:Math.max(total-paid,0)};
+}
+
+function renderHome(){
+  var d=ddayInfo(),m=interiorTotals();
+  var mv=sumP(S.move),bu=sumP(S.buy),all=m.total+mv+bu,paidAll=m.paid+sumP(S.move,true)+sumP(S.buy,true);
+  var upcoming=S.interior.filter(function(i){return i.date&&!i.done;}).sort(function(a,b){return a.date<b.date?-1:1;}).slice(0,3);
+  app.innerHTML=
+    '<div class="card dday"><div class="big">'+d.big+'</div><div class="date">'+d.sub+'</div></div>'+
+    '<div class="card"><h2>최종 이삿날</h2><div class="row"><input type="date" id="md" value="'+esc(S.moveDate)+'"></div></div>'+
+    '<div class="card"><h2>진행률</h2>'+prog('이사 준비',S.move)+prog('인테리어',S.interior)+prog('잔금 서류',S.docs)+prog('구매 목록',S.buy)+'</div>'+
+    '<div class="card"><h2>전체 비용</h2><div class="sum"><div style="grid-column:span 2">총 합계<b>'+won(all)+'</b></div><div>지출 완료<b>'+won(paidAll)+'</b></div><div>남은 금액<b>'+won(Math.max(all-paidAll,0))+'</b></div></div>'+
+    '<div style="margin-top:10px"><div class="item"><div class="t">🎨 인테리어</div><b>'+won(m.total)+'</b></div><div class="item"><div class="t">📦 이사</div><b>'+won(mv)+'</b></div><div class="item"><div class="t">🛒 구매</div><b>'+won(bu)+'</b></div></div>'+
+    '<div class="note">지출 완료: 인테리어는 예약금·잔금 완료 체크, 이사·구매는 항목 체크 기준입니다.</div></div>'+
+    (upcoming.length?'<div class="card"><h2>다가오는 시공</h2>'+upcoming.map(function(i){return '<div class="item"><div class="t"><b>'+esc(i.name)+'</b> · '+esc(i.vendor||'업체 미정')+'</div><span>'+esc(i.date.slice(5).replace('-','/'))+'</span></div>';}).join('')+'</div>':'')+
+    '<div class="card"><h2>백업</h2><div class="row"><button class="ghost small" id="exp">내보내기</button><button class="ghost small" id="imp">불러오기</button><button class="danger small" id="rst">초기화</button></div>'+
+    '<div class="note">데이터는 이 기기의 브라우저에만 저장됩니다. 기기를 바꾸기 전에 꼭 \'내보내기\'로 백업하세요.</div><input type="file" id="impf" accept="application/json" hidden></div>';
+  document.getElementById('md').addEventListener('change',function(e){S.moveDate=e.target.value;save();renderHome();});
+  document.getElementById('exp').onclick=function(){
+    var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,1)],{type:'application/json'}));
+    a.download='이사준비-백업-'+new Date().toISOString().slice(0,10)+'.json';a.click();
+  };
+  document.getElementById('imp').onclick=function(){document.getElementById('impf').click();};
+  document.getElementById('impf').onchange=function(e){
+    var f=e.target.files[0];if(!f)return;var r=new FileReader();
+    r.onload=function(){try{var o=JSON.parse(r.result);if(typeof o!=='object'||!o)throw 0;S=o;['move','docs','buy','interior'].forEach(function(k){if(!Array.isArray(S[k]))S[k]=[];});save();render();alert('불러왔습니다.');}catch(x){alert('올바른 백업 파일이 아닙니다.');}};
+    r.readAsText(f);
+  };
+  document.getElementById('rst').onclick=function(){if(confirm('모든 데이터를 지우고 기본 목록으로 되돌릴까요?')){S=defaults();save();render();}};
+}
+
+function renderList(k){
+  var L=LISTS[k],items=S[k],pr=!!PRICED[k],h='<div class="card">';
+  if(pr){var tt=sumP(items),pd=sumP(items,true);h+='<div class="sum" style="margin-bottom:6px"><div>합계<b>'+won(tt)+'</b></div><div>지출 완료<b>'+won(pd)+'</b></div></div>';}
+  h+=prog(L.title,items);
+  L.groups.forEach(function(g){
+    var gi=items.filter(function(i){return i.g===g;});
+    if(!gi.length)return;
+    h+='<div class="grp">'+esc(g)+'<span>'+gi.filter(function(i){return i.d;}).length+'/'+gi.length+(pr?' · '+won(sumP(gi)):'')+'</span></div>';
+    gi.forEach(function(i){
+      h+='<div class="item'+(i.d?' done':'')+'" data-id="'+i.id+'"><input type="checkbox" '+(i.d?'checked':'')+'><div class="t">'+esc(i.t)+'</div>'+(pr?'<button class="pr'+(i.p?' has':'')+'" data-pr="1">'+(i.p?won(i.p):'가격')+'</button>':'')+'<button class="x" data-del="1" aria-label="삭제">×</button></div>';
+    });
+  });
+  if(!items.length)h+='<div class="empty">항목이 없습니다</div>';
+  h+='<div class="add"><input type="text" id="newt" placeholder="새 항목 입력">'+(pr?'<input type="number" class="price" id="newp" inputmode="numeric" placeholder="가격(원)">':'')+'<select id="newg">'+L.groups.map(function(g){return '<option>'+esc(g)+'</option>';}).join('')+'</select><button id="addb">추가</button></div>';
+  h+='<div class="note">항목 글자를 누르면 수정, 가격 칸을 누르면 금액을 입력할 수 있어요.'+(k==='docs'?' 필요 서류는 거래 상황(대출, 상속, 증여 등)에 따라 다릅니다. 최종 목록은 법무사에게 확인하세요.':'')+'</div></div>';
+  app.innerHTML=h;
+  function add(){var v=document.getElementById('newt').value.trim();if(!v)return;S[k].push({id:uid(),g:document.getElementById('newg').value,t:v,d:false,p:pr?(Number(document.getElementById('newp').value)||0):0});save();renderList(k);}
+  document.getElementById('addb').onclick=add;
+  document.getElementById('newt').addEventListener('keydown',function(e){if(e.key==='Enter')add();});
+  app.querySelector('.card').addEventListener('click',function(e){
+    var row=e.target.closest('.item');if(!row)return;
+    var it=S[k].filter(function(i){return i.id===row.dataset.id;})[0];if(!it)return;
+    if(e.target.dataset.del){if(confirm('"'+it.t+'" 삭제할까요?')){S[k]=S[k].filter(function(i){return i!==it;});save();renderList(k);}return;}
+    if(e.target.dataset.pr){var pv=prompt('가격 (원, 숫자만)',it.p||'');if(pv!==null){it.p=Number(String(pv).replace(/[^0-9]/g,''))||0;save();renderList(k);}return;}
+    if(e.target.type==='checkbox'){it.d=e.target.checked;save();renderList(k);return;}
+    if(e.target.closest('.t')){var v=prompt('항목 수정',it.t);if(v!==null&&v.trim()){it.t=v.trim();save();renderList(k);}}
+  });
+}
+
+function renderInterior(){
+  var m=interiorTotals();
+  var h='<div class="card"><h2>비용 요약</h2><div class="sum"><div>총액<b>'+won(m.total)+'</b></div><div>지불 완료<b>'+won(m.paid)+'</b></div><div style="grid-column:span 2">남은 금액<b>'+won(m.left)+'</b></div></div></div>';
+  h+='<div class="card">'+prog('인테리어 진행',S.interior);
+  var list=S.interior.slice().sort(function(a,b){if(a.date&&b.date)return a.date<b.date?-1:1;if(a.date)return -1;if(b.date)return 1;return 0;});
+  list.forEach(function(i){
+    var tot=Number(i.tot)||((Number(i.dep)||0)+(Number(i.bal)||0));
+    h+='<div class="iv'+(i.done?' done':'')+'" data-id="'+i.id+'"><h3><span>'+esc(i.name||'(이름 없음)')+'</span><button class="ghost small" data-edit="1">수정</button></h3>'+
+      '<div class="meta">'+esc(i.vendor||'업체 미정')+(i.tel?' · <a href="tel:'+esc(i.tel)+'">'+esc(i.tel)+'</a>':'')+' · '+(i.date?esc(i.date):'시공일 미정')+'</div>'+
+      '<div class="money"><div>예약금<b>'+won(i.dep)+'</b></div><div>잔금<b>'+won(i.bal)+'</b></div><div>총액<b>'+won(tot)+'</b></div></div>'+
+      (i.memo?'<div class="meta" style="margin-top:8px;white-space:pre-wrap">'+esc(i.memo)+'</div>':'')+
+      '<div class="chips"><button class="chip'+(i.depPaid?' on':'')+'" data-tog="depPaid">예약금 완료</button><button class="chip'+(i.balPaid?' on':'')+'" data-tog="balPaid">잔금 완료</button><button class="chip'+(i.done?' on':'')+'" data-tog="done">시공 완료</button></div></div>';
+  });
+  if(!list.length)h+='<div class="empty">항목이 없습니다</div>';
+  h+='<button id="addIv" style="width:100%;margin-top:6px">+ 인테리어 항목 추가</button></div>';
+  app.innerHTML=h;
+  document.getElementById('addIv').onclick=function(){openDlg(null);};
+}
+function ivClick(e){
+  if(tab!=='interior')return;
+  var row=e.target.closest('.iv');if(!row)return;
+  var it=S.interior.filter(function(i){return i.id===row.dataset.id;})[0];if(!it)return;
+  if(e.target.dataset.edit){openDlg(it);}
+  else if(e.target.dataset.tog){it[e.target.dataset.tog]=!it[e.target.dataset.tog];save();renderInterior();}
+}
+app.addEventListener('click',ivClick);
+
+var dlg=document.getElementById('dlg'),cur=null;
+function $(id){return document.getElementById(id);}
+function openDlg(it){
+  cur=it;
+  $('dlgTitle').textContent=it?'인테리어 항목 수정':'인테리어 항목 추가';
+  $('f_name').value=it?it.name:'';$('f_vendor').value=it?it.vendor:'';$('f_tel').value=it?it.tel||'':'';
+  $('f_date').value=it?it.date:'';$('f_dep').value=it&&it.dep?it.dep:'';$('f_bal').value=it&&it.bal?it.bal:'';
+  $('f_tot').value=it&&it.tot?it.tot:'';$('f_memo').value=it?it.memo:'';
+  $('f_del').style.display=it?'':'none';
+  dlg.showModal();
+}
+$('f_cancel').onclick=function(){dlg.close();};
+$('f_save').onclick=function(){
+  var name=$('f_name').value.trim();
+  if(!name){alert('공종을 입력하세요.');return;}
+  var o=cur||{id:uid(),depPaid:false,balPaid:false,done:false};
+  o.name=name;o.vendor=$('f_vendor').value.trim();o.tel=$('f_tel').value.trim();o.date=$('f_date').value;
+  o.dep=Number($('f_dep').value)||0;o.bal=Number($('f_bal').value)||0;o.tot=Number($('f_tot').value)||0;o.memo=$('f_memo').value.trim();
+  if(!cur)S.interior.push(o);
+  save();dlg.close();renderInterior();
+};
+$('f_del').onclick=function(){if(cur&&confirm('"'+cur.name+'" 삭제할까요?')){S.interior=S.interior.filter(function(i){return i!==cur;});save();dlg.close();renderInterior();}};
+
+function render(){
+  renderNav();
+  var names={home:'🏠 이사준비',move:'📦 이사 준비',interior:'🎨 인테리어',docs:'📄 잔금 서류',buy:'🛒 구매 목록'};
+  ttl.textContent=names[tab];
+  if(tab==='home')renderHome();
+  else if(tab==='interior')renderInterior();
+  else renderList(tab);
+}
+render();
+
+if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}
+})();
+</script>
+</body>
+</html>
